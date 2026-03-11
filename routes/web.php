@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\http\controllers\Admin\AdminController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\FrontendController;
 
 
 
@@ -30,3 +31,7 @@ require __DIR__.'/settings.php';
 
 
 Route::resource('admin/dashboard', AdminController::class)->only(['index']);
+
+
+Route::resource('admin/dashboard', AdminController::class)->only(['index']);
+Route::get('/about', [FrontendController::class, 'about']);
