@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Menu, Phone, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,11 @@ type Props = {
     breadcrumbs?: BreadcrumbItem[];
 };
 
+type NavbarApiResponse = {
+    logo_url: string | null;
+    contact_number: string | null;
+};
+
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
@@ -69,6 +75,40 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
     const { auth } = page.props;
     const getInitials = useInitials();
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+    const [navbarData, setNavbarData] = useState<NavbarApiResponse | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadNavbarData = async () => {
+            try {
+                const response = await fetch('/api/navbar', {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const data = (await response.json()) as NavbarApiResponse;
+
+                if (isMounted) {
+                    setNavbarData(data);
+                }
+            } catch {
+                // Keep default UI when API data is unavailable.
+            }
+        };
+
+        loadNavbarData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     return (
         <>
             <div className="border-b border-sidebar-border/80">
@@ -139,7 +179,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         prefetch
                         className="flex items-center space-x-2"
                     >
-                        <AppLogo />
+                        <AppLogo logoUrl={navbarData?.logo_url ?? undefined} />
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -177,6 +217,13 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     </div>
 
                     <div className="ml-auto flex items-center space-x-2">
+                        {navbarData?.contact_number && (
+                            <div className="mr-2 hidden items-center gap-1 rounded-md border border-sidebar-border/70 bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground lg:flex">
+                                <Phone className="size-3.5" />
+                                <span>{navbarData.contact_number}</span>
+                            </div>
+                        )}
+
                         <div className="relative flex items-center space-x-1">
                             <Button
                                 variant="ghost"

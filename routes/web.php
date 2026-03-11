@@ -1,21 +1,10 @@
 <?php
-
-Route::get('/', function () {
-   echo "Hello World";
-});
-
 use Illuminate\Support\Facades\Route;
-use App\http\controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\FrontendController;
-
-
-
-
-Route::get('/', function () {
-    return view('app');
-});
+use App\Http\Controllers\NavbarController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -29,9 +18,13 @@ Route::get('dashboard', function () {
 
 require __DIR__.'/settings.php';
 
-
 Route::resource('admin/dashboard', AdminController::class)->only(['index']);
 
+Route::get('admin/navbar', [NavbarController::class, 'form'])->name('navbar.form');
+Route::post('admin/navbar', [NavbarController::class, 'store'])->name('navbar.form.submit');
+Route::get('admin/navbar/{navbar}/edit', [NavbarController::class, 'edit'])->name('navbar.form.edit');
+Route::put('admin/navbar/{navbar}', [NavbarController::class, 'update'])->name('navbar.form.update');
+Route::delete('admin/navbar/{navbar}', [NavbarController::class, 'destroy'])->name('navbar.form.delete');
+Route::patch('admin/navbar/{navbar}/active', [NavbarController::class, 'setActive'])->name('navbar.form.active');
 
-Route::resource('admin/dashboard', AdminController::class)->only(['index']);
 Route::get('/about', [FrontendController::class, 'about']);
