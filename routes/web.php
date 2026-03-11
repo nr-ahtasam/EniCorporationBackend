@@ -1,5 +1,9 @@
 <?php
 
+Route::get('/', function () {
+   echo "Hello World";
+});
+
 use Illuminate\Support\Facades\Route;
 use App\http\controllers\Admin\AdminController;
 use Inertia\Inertia;
@@ -8,9 +12,9 @@ use Laravel\Fortify\Features;
 
 
 
-// Route::get('/', function () {
-//     return view('app');
-// });
+Route::get('/', function () {
+    return view('app');
+});
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
